@@ -1,0 +1,29 @@
+# .github/workflows/docker.yml
+name: Dockerized Node App CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t github-actions-node-app .
+
+      - name: Run Docker container
+        run: docker run -d -p 3000:3000 --name app github-actions-node-app
+
+      - name: Wait for app to start
+        run: sleep 5
+
+      - name: Test app response
+        run: curl http://localhost:3000
+
+      - name: Stop and remove container
+        run: docker rm -f app
